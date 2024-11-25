@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Details</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+    <div class="navbar">
+        <a href="./index.html">Dashboard</a>
+    </div>
+    <div class="user-details">
+        <h2>User Details</h2>
+       
+        <div id="loading-message">Loading user data...</div>
+        <div class="table-container">
+        <table id="user-table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Data</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Transactions will be listed here -->
+            </tbody>
+        </table>
+    </div>
+        <br>
+      <div class="flex gap10">
+        <div class="flex gap1o">
+            <!-- Edit User Button -->
+            <a id="edit-user-btn" href="#"><button>Edit User</button></a>
+        
+            <!-- Add Transaction Button -->
+            <a id="add-transaction-btn" href="#"><button>Add Transaction</button></a>
+        </div>
+      </div>
+        <br>
+        <h3>Transactions</h3>
+        <div class="table-container">
+        <table id="transactions-table">
+            <thead>
+                <tr>
+                    <th>transactionName</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Transactions will be listed here -->
+            </tbody>
+        </table>
+    </div>
+    </div>
+    <script src="assets/js/app.js"></script>
+
+    <script>
+        // Extract the userId from the URL query parameters
+const urlParams = new URLSearchParams(window.location.search);
+const userId = urlParams.get('userId');
+
+// Check if the userId is valid
+if (userId) {
+    // Make an API request to fetch the user data
+    const loadingMessage = document.getElementById('loading-message');
+    loadingMessage.style.display = 'block';
+
+    fetch(`${apiUrl}/api/user/users/${userId}`)
+        .then(response => response.json())
+        .then(data => {
+            // Log the response data to the console
+            console.log("User data received:", data);
+
+            const editUserBtn = document.getElementById('edit-user-btn');
+            const addTransactionBtn = document.getElementById('add-transaction-btn');
+    
+            // Modify the href attribute to include the userId
+            editUserBtn.href = `./editUser.html?userId=${userId}`;
+            addTransactionBtn.href = `./addTransaction.html?userId=${userId}`;
+            // Hide the loading message
+            loadingMessage.style.display = 'none';
+
+            // Populate the table with the user data
+            const user = data.user;
+            const tableBody = document.querySelector('#user-table tbody');
+
+            // Add rows to the table for each user detail
+            const userDetails = [
+                { title: "Account Name", data: user.AccountName },
+                { title: "Phone Number", data: user.PhoneNo },
+                { title: "Account Balance", data:`$ ${ user.AccountBalance.toLocaleString()}` },
+                { title: "Account Number", data: user.AccountNumber },
+                { title: "Routing Number", data: user.RoutingNumber },
+                { title: "Interest Rate", data: user.InterestRate + "%" },
+                { title: "Interest in 2024", data: user.InterestIn2024 },
+                { title: "Last Statement Date", data:  new Date(user.LastStatementDate).toISOString().split('T')[0]},
+                { title: "Available Balance", data: `$ ${ user.AvailableBalance.toLocaleString()}`  },
+                { title: "Present Balance", data: `$ ${ user.PresentBalance.toLocaleString()}` }
+            ];
+
+            // Populate the table with rows for each field
+            userDetails.forEach(detail => {
+                const row = document.createElement('tr');
+                const titleCell = document.createElement('td');
+                const dataCell = document.createElement('td');
+                
+                titleCell.textContent = detail.title;
+                dataCell.textContent = detail.data;
+                
+                row.appendChild(titleCell);
+                row.appendChild(dataCell);
+                tableBody.appendChild(row);
+            });
+        })
+        .catch(error => {
+            console.error("Error fetching user data:", error);
+            loadingMessage.textContent = 'Error loading user data';
+        });
+} else {
+    console.log("No userId found in the URL");
+    document.getElementById('loading-message').textContent = 'No userId found in the URL';
+}
+
+
+
+
+async function fetchUserTransactions() {
+            // Get the userId from URL (assuming it is in the query parameters)
+            const userId = getUrlParameter("userId");
+
+            try {
+                const response = await fetch(`${apiUrl}/api/transactions/transactions/${userId}`); // Adjust the URL accordingly
+                const result = await response.json();
+
+                if (response.ok) {
+                    console.log("User transactions:", result.transactions);
+
+                  
+                    // Get the table body
+                    const tableBody = document.querySelector("#transactions-table tbody");
+
+                    // Clear the table before appending new rows
+                    tableBody.innerHTML = '';
+
+                    // Loop through transactions and display them in the table
+                    result.transactions.forEach(transaction => {
+                        const row = document.createElement("tr");
+
+                        // Create table cells
+                        const transactionNameCell = document.createElement("td");
+                        transactionNameCell.textContent = transaction.transactionName;
+
+                        const amountCell = document.createElement("td");
+                        amountCell.textContent = `$ ${transaction.amount.toLocaleString()}` ;
+
+                        const statusCell = document.createElement("td");
+                        statusCell.textContent = transaction.status;
+
+                        const actionsCell = document.createElement("td");
+
+                        // Create action buttons
+                        const deleteButton = document.createElement("button");
+                        deleteButton.textContent = "Delete";
+                        deleteButton.addEventListener("click", () => deleteTransaction(transaction._id));
+
+                        const updateButton = document.createElement("button");
+                        updateButton.textContent = "Update";
+                        updateButton.addEventListener("click", () => updateTransaction(transaction._id));
+
+                        // Append buttons to actions cell
+                        actionsCell.appendChild(deleteButton);
+                        actionsCell.appendChild(updateButton);
+
+                        // Append cells to the row
+                        row.appendChild(transactionNameCell);
+                        row.appendChild(amountCell);
+                        row.appendChild(statusCell);
+                        row.appendChild(actionsCell);
+
+                        // Append the row to the table
+                        tableBody.appendChild(row);
+                    });
+                   
+                } else {
+                    console.error("Error fetching transactions:", result.message);
+                }
+            } catch (error) {
+                console.error("Error fetching transactions:", error);
+            }
+        }
+
+        // Function to get URL parameters
+        function getUrlParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        function deleteTransaction(transactionId) {
+            console.log("Deleting transaction with ID:", transactionId);
+         
+            fetch(`${apiUrl}/api/transactions/transactions/${transactionId}`, { method: 'DELETE' })
+                .then(response => response.json())
+                .then(data => {
+                  if (data.message === "Transaction deleted successfully") {
+                      console.log("Transaction deleted:", data);
+                      // Reload the page after the transaction is successfully deleted
+                      window.location.reload();  // This will reload the current page
+                  } else {
+                      console.error("Failed to delete transaction:", data);
+                                }
+              })
+                .catch(error => console.error("Error deleting transaction:", error));
+        }
+
+        // Function to navigate to the update page
+        function updateTransaction(transactionId) {
+            const updateUrl = `updateTransaction.html?transId=${transactionId}`;
+            window.location.href = updateUrl;
+        }
+
+        // Fetch and log transactions on page load
+        fetchUserTransactions();
+    </script>
+</body>
+</html>
+

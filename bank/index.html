@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Users</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+    <div class="navbar">
+        <a href="./index.html">Dashboard</a>
+    </div>
+    <br>
+    <div class="users-list">
+        <div class="flex gap10">
+            <h2>Users</h2>
+            <a href="adduser.html"> <button class="view-btn">Add User</button></a>
+        </div>
+        <div class="table-container">
+        <table id="users-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Account Balance</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="users-table-body">
+                <!-- User rows will be populated here -->
+            </tbody>
+        </table>
+    </div>
+    </div>
+    <script src="assets/js/app.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", async function () {
+            const usersTableBody = document.getElementById("users-table-body");
+
+            try {
+                const response = await fetch(`${apiUrl}/api/user/users`); // Replace apiUrl with actual API URL
+                const users = await response.json();
+                
+                if (users && users.length > 0) {
+                    users.forEach(user => {
+                        const row = document.createElement("tr");
+
+                        row.innerHTML = `
+                            <td>${user._id}</td>
+                            <td>${user.AccountName}</td>
+                            <td>${user.PhoneNo}</td>
+                            <td>${user.AccountBalance}</td>
+                            <td>
+                                <button class="edit-btn" onclick="editUser('${user._id}')">Edit</button>
+                                <button class="edit-btn" onclick="Details('${user._id}')">Details</button>
+                                <button class="delete-btn" onclick="deleteUser('${user._id}')">Delete</button>
+                            </td>
+                        `;
+
+                        usersTableBody.appendChild(row);
+                    });
+                } else {
+                    usersTableBody.innerHTML = "<tr><td colspan='5'>No users found</td></tr>";
+                }
+            } catch (error) {
+                console.error("Error fetching users:", error);
+                usersTableBody.innerHTML = "<tr><td colspan='5'>Error fetching users</td></tr>";
+            }
+        });
+
+        // Edit user function (redirects to edit user page)
+        function editUser(userId) {
+            window.location.href = `${windowUrl}/editUser.html?userId=${userId}`;
+        }
+        function Details(userId) {
+            window.location.href = `${windowUrl}/userDetails.html?userId=${userId}`;
+        }
+
+        // Delete user function
+        async function deleteUser(userId) {
+            try {
+                const response = await fetch(`${apiUrl}/api/user/users/${userId}`, {
+                    method: "DELETE"
+                });
+
+                const result = await response.json();
+                if (result.message === "User deleted successfully") {
+                    window.location.reload(); // Reload the page to reflect the changes
+                } else {
+                    alert("Error deleting user");
+                }
+            } catch (error) {
+                console.error("Error deleting user:", error);
+                alert("Error deleting user");
+            }
+        }
+    </script>
+</body>
+</html>

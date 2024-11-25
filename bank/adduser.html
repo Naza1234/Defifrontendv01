@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit User</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+    <div class="navbar">
+        <a href="./index.html">Dashboard</a>
+    </div>
+    <br>
+    <div class="edit-user">
+        <h2>Add user</h2>
+        <br>
+        <form id="add-user-form">
+            <label for="AccountName">Account Name</label>
+            <input type="text" id="AccountName" name="AccountName" required>
+        
+            <label for="PhoneNo">Phone Number</label>
+            <input type="text" id="PhoneNo" name="PhoneNo" required>
+        
+            <label for="AccountBalance">Account Balance</label>
+            <input type="number" id="AccountBalance" name="AccountBalance" value="0">
+        
+            <label for="AccountNumber">Account Number</label>
+            <input type="text" id="AccountNumber" name="AccountNumber" required>
+        
+            <label for="RoutingNumber">Routing Number</label>
+            <input type="text" id="RoutingNumber" name="RoutingNumber" required>
+        
+            <label for="InterestRate">Interest Rate</label>
+            <input type="number" id="InterestRate" name="InterestRate" value="0">
+        
+            <label for="InterestIn2024">Interest in 2024</label>
+            <input type="number" id="InterestIn2024" name="InterestIn2024" value="0">
+        
+            <label for="LastStatementDate">Last Statement Date</label>
+            <input type="date" id="LastStatementDate" name="LastStatementDate">
+        
+            <label for="AvailableBalance">Available Balance</label>
+            <input type="number" id="AvailableBalance" name="AvailableBalance" value="0">
+        
+            <label for="PresentBalance">Present Balance</label>
+            <input type="number" id="PresentBalance" name="PresentBalance" value="0">
+        
+            <label for="Password">Password</label>
+            <input type="password" id="Password" name="Password" required>
+        
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+    <script src="./assets/js/a"></script>
+    <script>
+        document.getElementById("add-user-form").addEventListener("submit", async function (event) {
+    event.preventDefault(); // Prevent the default form submission
+
+    const form = event.target;
+    const formData = new FormData(form);
+
+    // Convert FormData to JSON
+    const data = Object.fromEntries(formData.entries());
+
+    try {
+        const response = await fetch(`${apiUrl}/api/user/users`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const result = await response.json();
+        console.log("Response from API:", result);
+        window.location=`${windowUrl}/userDetails.html?userId=${result._id}`
+    } catch (error) {
+        console.error("Error submitting form:", error);
+    }
+    });
+
+
+    </script>
+</body>
+</html>
+

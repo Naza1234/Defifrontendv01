@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit User</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+    <div class="navbar">
+        <a href="./index.html">Dashboard</a>
+    </div>
+    <br>
+    <div class="edit-user">
+        <h2>Edit User</h2>
+        <br>
+        <div id="loading-message">Loading user data...</div>
+        
+        <form id="edit-user-form">
+            <label for="AccountName">Account Name</label>
+            <input type="text" id="AccountName" name="AccountName" required>
+        
+            <label for="PhoneNo">Phone Number</label>
+            <input type="text" id="PhoneNo" name="PhoneNo" required>
+        
+            <label for="AccountBalance">Account Balance</label>
+            <input type="number" id="AccountBalance" name="AccountBalance" value="0">
+        
+            <label for="AccountNumber">Account Number</label>
+            <input type="text" id="AccountNumber" name="AccountNumber" required>
+        
+            <label for="RoutingNumber">Routing Number</label>
+            <input type="text" id="RoutingNumber" name="RoutingNumber" required>
+        
+            <label for="InterestRate">Interest Rate</label>
+            <input type="number" id="InterestRate" name="InterestRate" value="0">
+        
+            <label for="InterestIn2024">Interest in 2024</label>
+            <input type="number" id="InterestIn2024" name="InterestIn2024" value="0">
+        
+            <label for="LastStatementDate">Last Statement Date</label>
+            <input type="date" id="LastStatementDate" name="LastStatementDate">
+        
+            <label for="AvailableBalance">Available Balance</label>
+            <input type="number" id="AvailableBalance" name="AvailableBalance" value="0">
+        
+            <label for="PresentBalance">Present Balance</label>
+            <input type="number" id="PresentBalance" name="PresentBalance" value="0">
+        
+            <label for="Password">Password</label>
+            <input type="password" id="Password" name="Password" required>
+        
+            <button type="submit">Update User</button>
+        </form>
+    </div>
+    <script src="./assets/js/app.js"></script>
+    <script>
+        // Extract the userId from the URL query parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const userId = urlParams.get('userId');
+
+        // Show loading message until the user data is fetched
+        const loadingMessage = document.getElementById('loading-message');
+        const form = document.getElementById('edit-user-form');
+        
+        if (userId) {
+            loadingMessage.style.display = 'block';
+
+            // Fetch the user data from the API
+            fetch(`${apiUrl}/api/user/users/${userId}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Log the response data to the console for debugging
+                    console.log("User data received:", data);
+                    loadingMessage.style.display = 'none';
+
+                    // Populate the form with the user data
+                    const user = data.user;
+                    document.getElementById('AccountName').value = user.AccountName;
+                    document.getElementById('PhoneNo').value = user.PhoneNo;
+                    document.getElementById('AccountBalance').value = user.AccountBalance;
+                    document.getElementById('AccountNumber').value = user.AccountNumber;
+                    document.getElementById('RoutingNumber').value = user.RoutingNumber;
+                    document.getElementById('InterestRate').value = user.InterestRate;
+                    document.getElementById('InterestIn2024').value = user.InterestIn2024;
+                    document.getElementById('LastStatementDate').value = new Date(user.LastStatementDate).toLocaleDateString();
+                    document.getElementById('AvailableBalance').value = user.AvailableBalance;
+                    document.getElementById('PresentBalance').value = user.PresentBalance;
+                    document.getElementById('Password').value = user.Password;
+                })
+                .catch(error => {
+                    console.error("Error fetching user data:", error);
+                    loadingMessage.textContent = 'Error loading user data';
+                });
+        } else {
+            console.log("No userId found in the URL");
+            loadingMessage.textContent = 'No userId found in the URL';
+        }
+
+        // Handle the form submission to update user data
+        form.addEventListener("submit", async function(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            const formData = new FormData(form);
+            const updatedData = Object.fromEntries(formData.entries());
+
+            try {
+                const response = await fetch(`${apiUrl}/api/user/users/${userId}`, {
+                    method: "PUT", // Use PUT to update the user data
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(updatedData)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                console.log("User data updated:", result);
+
+                // After updating, reload the page to show the updated data
+                window.location=`${windowUrl}/userDetails.html?userId=${result.user._id}`
+            } catch (error) {
+                console.error("Error submitting form:", error);
+            }
+        });
+    </script>
+</body>
+</html>
