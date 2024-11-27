@@ -96,7 +96,7 @@ if (userId) {
                 { title: "Routing Number", data: user.RoutingNumber },
                 { title: "Interest Rate", data: user.InterestRate + "%" },
                 { title: "Interest in 2024", data: user.InterestIn2024 },
-                { title: "Last Statement Date", data:  new Date(user.LastStatementDate).toISOString().split('T')[0]},
+                { title: "Last Statement Date", data:  user.LastStatementDate},
                 { title: "Available Balance", data: `$ ${ user.AvailableBalance.toLocaleString()}`  },
                 { title: "Present Balance", data: `$ ${ user.PresentBalance.toLocaleString()}` }
             ];
