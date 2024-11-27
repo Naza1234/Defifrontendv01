@@ -79,7 +79,7 @@
                 // Pre-fill the form with the existing transaction data
                 document.getElementById('transactionName').value = transaction.transactionName;
                 document.getElementById('type').value = transaction.type;
-                document.getElementById('date').value = new Date(transaction.date).toISOString().split('T')[0];
+                document.getElementById('dateTransaction').value = transaction.dateTransaction;
                 document.getElementById('currentAccountBalance').value = transaction.currentAccountBalance;
                 document.getElementById('amount').value = transaction.amount;
                 document.getElementById('transactionType').value = transaction.transactionType;
