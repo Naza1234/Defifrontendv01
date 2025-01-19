@@ -90,7 +90,8 @@ if (userId) {
             // Add rows to the table for each user detail
             const userDetails = [
                 { title: "Account Name", data: user.AccountName },
-                { title: "Phone Number", data: user.PhoneNo },
+                { title: "User Name", data: user.userName },
+                { title: "Account Type", data: user.AccountType },
                 { title: "Account Balance", data:`$ ${ user.AccountBalance.toLocaleString()}` },
                 { title: "Account Number", data: user.AccountNumber },
                 { title: "Routing Number", data: user.RoutingNumber },
